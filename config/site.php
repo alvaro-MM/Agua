@@ -4,12 +4,22 @@
 |--------------------------------------------------------------------------
 | Configuración de la web pública
 |--------------------------------------------------------------------------
-| Datos editables de la empresa, contacto, servicios, catálogo y proyectos.
-| Los textos son provisionales (placeholder) hasta recibir el material real
-| de Miguel. Cambiar aquí sin tocar las vistas.
+| Semilla inicial del contenido del sitio. Desde que existe el panel de
+| gestión, estos datos NO los leen las vistas: se vuelcan a la base de datos
+| con `SiteContentSeeder` y a partir de ahí Miguel los edita en /admin.
+|
+| Sirven para arrancar un entorno nuevo y como copia de referencia del
+| contenido original. Los textos son provisionales (placeholder) hasta
+| recibir el material real de Miguel.
 */
 
 return [
+
+    'admin' => [
+        'name' => env('ADMIN_NAME', 'Administrador'),
+        'email' => env('ADMIN_EMAIL'),
+        'password' => env('ADMIN_PASSWORD'),
+    ],
 
     'company' => [
         'name' => 'Electro Bombas MAPF',
