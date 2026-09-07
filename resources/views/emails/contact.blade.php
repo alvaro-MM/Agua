@@ -17,5 +17,5 @@ Responder
 </x-mail::button>
 
 Gracias,<br>
-{{ config('site.company.name') }}
+{{ $settings->company_name }}
 </x-mail::message>

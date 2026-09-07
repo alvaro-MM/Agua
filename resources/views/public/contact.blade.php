@@ -1,9 +1,4 @@
-@php
-    $company = config('site.company');
-    $contact = config('site.contact');
-@endphp
-
-<x-layouts.public title="Contacto" description="Contacta con {{ $company['name'] }}. Presupuesto sin compromiso para instalación, reparación y mantenimiento de bombas de agua.">
+<x-layouts.public title="Contacto" description="Contacta con {{ $settings->company_name }}. Presupuesto sin compromiso para instalación, reparación y mantenimiento de bombas de agua.">
     <section class="bg-slate-50 border-b border-slate-100">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
             <h1 class="text-4xl font-bold tracking-tight text-slate-900">Contacto</h1>
@@ -25,7 +20,7 @@
                         </span>
                         <div>
                             <dt class="text-sm font-medium text-slate-500">Teléfono</dt>
-                            <dd><a href="tel:{{ $contact['phone_link'] }}" class="text-slate-900 hover:text-sky-700">{{ $contact['phone'] }}</a></dd>
+                            <dd><a href="tel:{{ $settings->phone_link }}" class="text-slate-900 hover:text-sky-700">{{ $settings->phone }}</a></dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-4">
@@ -34,7 +29,7 @@
                         </span>
                         <div>
                             <dt class="text-sm font-medium text-slate-500">Email</dt>
-                            <dd><a href="mailto:{{ $contact['email'] }}" class="text-slate-900 hover:text-sky-700">{{ $contact['email'] }}</a></dd>
+                            <dd><a href="mailto:{{ $settings->email }}" class="text-slate-900 hover:text-sky-700">{{ $settings->email }}</a></dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-4">
@@ -43,7 +38,7 @@
                         </span>
                         <div>
                             <dt class="text-sm font-medium text-slate-500">Dirección</dt>
-                            <dd class="text-slate-900">{{ $contact['address'] }}, {{ $contact['postal_code'] }} {{ $company['city'] }}</dd>
+                            <dd class="text-slate-900">{{ $settings->address }}, {{ $settings->postal_code }} {{ $settings->city }}</dd>
                         </div>
                     </div>
                     <div class="flex items-start gap-4">
@@ -52,14 +47,14 @@
                         </span>
                         <div>
                             <dt class="text-sm font-medium text-slate-500">Horario</dt>
-                            <dd class="text-slate-900">{{ $contact['schedule'] }}</dd>
+                            <dd class="text-slate-900">{{ $settings->schedule }}</dd>
                         </div>
                     </div>
                 </dl>
 
-                @if ($contact['maps_embed'])
+                @if ($settings->maps_embed)
                     <div class="mt-8 overflow-hidden rounded-xl border border-slate-200">
-                        {!! $contact['maps_embed'] !!}
+                        {!! $settings->maps_embed !!}
                     </div>
                 @endif
             </div>

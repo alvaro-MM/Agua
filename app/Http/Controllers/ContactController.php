@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ContactRequest;
 use App\Mail\ContactFormSubmitted;
 use App\Models\ContactMessage;
+use App\Support\PublicContent;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Mail;
 
@@ -17,7 +18,7 @@ class ContactController extends Controller
 
         $message = ContactMessage::create($data);
 
-        $notifyEmail = config('site.contact.notify_email');
+        $notifyEmail = PublicContent::settings()->notify_email;
 
         if ($notifyEmail) {
             Mail::to($notifyEmail)->send(new ContactFormSubmitted($message));

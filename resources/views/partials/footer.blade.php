@@ -1,8 +1,3 @@
-@php
-    $company = config('site.company');
-    $contact = config('site.contact');
-@endphp
-
 <footer class="bg-slate-900 text-slate-300">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
@@ -11,9 +6,9 @@
                     <svg class="h-6 w-6 text-sky-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <path d="M12 2.5c3.5 4 6 7.4 6 10.5a6 6 0 1 1-12 0c0-3.1 2.5-6.5 6-10.5Z"/>
                     </svg>
-                    {{ $company['name'] }}
+                    {{ $settings->company_name }}
                 </div>
-                <p class="mt-3 text-sm text-slate-400">{{ $company['tagline'] }}</p>
+                <p class="mt-3 text-sm text-slate-400">{{ $settings->tagline }}</p>
             </div>
 
             <div>
@@ -31,10 +26,10 @@
             <div>
                 <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Contacto</h3>
                 <ul class="mt-4 space-y-2 text-sm">
-                    <li><a href="tel:{{ $contact['phone_link'] }}" class="hover:text-white">{{ $contact['phone'] }}</a></li>
-                    <li><a href="mailto:{{ $contact['email'] }}" class="hover:text-white">{{ $contact['email'] }}</a></li>
-                    <li>{{ $contact['address'] }}, {{ $contact['postal_code'] }} {{ $company['city'] }}</li>
-                    <li>{{ $contact['schedule'] }}</li>
+                    <li><a href="tel:{{ $settings->phone_link }}" class="hover:text-white">{{ $settings->phone }}</a></li>
+                    <li><a href="mailto:{{ $settings->email }}" class="hover:text-white">{{ $settings->email }}</a></li>
+                    <li>{{ $settings->address }}, {{ $settings->postal_code }} {{ $settings->city }}</li>
+                    <li>{{ $settings->schedule }}</li>
                 </ul>
             </div>
 
@@ -48,7 +43,7 @@
         </div>
 
         <div class="mt-10 border-t border-slate-800 pt-6 text-center text-sm text-slate-500">
-            &copy; {{ date('Y') }} {{ $company['name'] }}. Todos los derechos reservados.
+            &copy; {{ date('Y') }} {{ $settings->company_name }}. Todos los derechos reservados.
         </div>
     </div>
 </footer>

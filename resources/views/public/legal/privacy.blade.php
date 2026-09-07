@@ -1,9 +1,4 @@
-@php
-    $company = config('site.company');
-    $contact = config('site.contact');
-@endphp
-
-<x-layouts.public title="Política de privacidad" description="Política de privacidad y protección de datos de {{ $company['name'] }}.">
+<x-layouts.public title="Política de privacidad" description="Política de privacidad y protección de datos de {{ $settings->company_name }}.">
     <section class="bg-slate-50 border-b border-slate-100">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-14">
             <h1 class="text-4xl font-bold tracking-tight text-slate-900">Política de privacidad</h1>
@@ -19,9 +14,9 @@
             <div>
                 <h2 class="text-xl font-semibold text-slate-900">1. Responsable del tratamiento</h2>
                 <p class="mt-2">
-                    {{ $company['legal_name'] }} (NIF {{ $company['nif'] }}), con domicilio en
-                    {{ $contact['address'] }}, {{ $contact['postal_code'] }} {{ $company['city'] }}.
-                    Email de contacto: {{ $contact['email'] }}.
+                    {{ $settings->legal_name }} (NIF {{ $settings->nif }}), con domicilio en
+                    {{ $settings->address }}, {{ $settings->postal_code }} {{ $settings->city }}.
+                    Email de contacto: {{ $settings->email }}.
                 </p>
             </div>
 
@@ -53,7 +48,7 @@
                 <h2 class="text-xl font-semibold text-slate-900">5. Derechos</h2>
                 <p class="mt-2">
                     Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y
-                    portabilidad enviando un email a {{ $contact['email'] }}. También puedes reclamar ante la Agencia
+                    portabilidad enviando un email a {{ $settings->email }}. También puedes reclamar ante la Agencia
                     Española de Protección de Datos (www.aepd.es).
                 </p>
             </div>

@@ -10,10 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     @php
-        $company = config('site.company');
-        $contact = config('site.contact');
-        $metaTitle = trim((string) $title) !== '' ? $title . ' | ' . $company['name'] : $company['name'] . ' — ' . $company['tagline'];
-        $metaDescription = $description ?? $company['description'];
+        $metaTitle = trim((string) $title) !== '' ? $title . ' | ' . $settings->company_name : $settings->company_name . ' — ' . $settings->tagline;
+        $metaDescription = $description ?? $settings->description;
     @endphp
 
     <title>{{ $metaTitle }}</title>
@@ -21,7 +19,7 @@
     <link rel="canonical" href="{{ url()->current() }}">
 
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="{{ $company['name'] }}">
+    <meta property="og:site_name" content="{{ $settings->company_name }}">
     <meta property="og:title" content="{{ $metaTitle }}">
     <meta property="og:description" content="{{ $metaDescription }}">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -42,24 +40,7 @@
     @stack('head')
 
     <script type="application/ld+json">
-    {!! json_encode([
-        '@context' => 'https://schema.org',
-        '@type' => 'Plumber',
-        'name' => $company['name'],
-        'description' => $company['description'],
-        'url' => url('/'),
-        'telephone' => $contact['phone'],
-        'email' => $contact['email'],
-        'address' => [
-            '@type' => 'PostalAddress',
-            'streetAddress' => $contact['address'],
-            'postalCode' => $contact['postal_code'],
-            'addressLocality' => $company['city'],
-            'addressCountry' => 'ES',
-        ],
-        'areaServed' => $company['service_areas'],
-        'openingHours' => 'Mo-Fr 08:00-18:00',
-    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+    {!! $settings->toSchemaOrg() !!}
     </script>
 </head>
 <body class="min-h-screen bg-white text-slate-800 antialiased flex flex-col">

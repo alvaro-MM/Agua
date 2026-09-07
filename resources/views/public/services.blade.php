@@ -1,7 +1,3 @@
-@php
-    $services = config('site.services');
-@endphp
-
 <x-layouts.public title="Servicios" description="Instalación, reparación y mantenimiento de bombas de agua. Descubre todos nuestros servicios profesionales.">
     <section class="bg-slate-50 border-b border-slate-100">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
@@ -15,18 +11,18 @@
     <section class="py-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-16">
             @foreach ($services as $service)
-                <div id="{{ $service['slug'] }}" class="grid gap-8 lg:grid-cols-3 scroll-mt-24">
+                <div id="{{ $service->slug }}" class="grid gap-8 lg:grid-cols-3 scroll-mt-24">
                     <div class="lg:col-span-1">
                         <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
-                            <x-service-icon :name="$service['icon']" class="h-6 w-6" />
+                            <x-service-icon :name="$service->icon" class="h-6 w-6" />
                         </div>
-                        <h2 class="mt-4 text-2xl font-bold text-slate-900">{{ $service['title'] }}</h2>
-                        <p class="mt-3 text-slate-600">{{ $service['excerpt'] }}</p>
+                        <h2 class="mt-4 text-2xl font-bold text-slate-900">{{ $service->title }}</h2>
+                        <p class="mt-3 text-slate-600">{{ $service->excerpt }}</p>
                     </div>
                     <div class="lg:col-span-2">
-                        <p class="text-slate-700 leading-relaxed">{{ $service['description'] }}</p>
+                        <p class="text-slate-700 leading-relaxed">{{ $service->description }}</p>
                         <ul class="mt-6 grid gap-3 sm:grid-cols-2">
-                            @foreach ($service['features'] as $feature)
+                            @foreach ($service->features as $feature)
                                 <li class="flex items-start gap-3">
                                     <svg class="mt-0.5 h-5 w-5 flex-shrink-0 text-sky-600" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/>

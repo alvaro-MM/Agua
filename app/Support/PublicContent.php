@@ -6,15 +6,23 @@ use App\Models\Product;
 use App\Models\Project;
 use App\Models\Service;
 use App\Models\SiteSettings;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
 /**
  * Punto único de lectura del contenido público, cacheado.
  *
- * La web pública es de solo lectura y cambia cuando Miguel guarda algo en el
- * panel, así que las consultas se cachean sin caducidad y se invalidan por
+ * La web pública es de solo lectura y sólo cambia cuando Miguel guarda algo en
+ * el panel, así que las consultas se cachean sin caducidad y se invalidan por
  * evento (ver el trait FlushesPublicCache).
+ *
+ * Importante: en la caché se guardan arrays de atributos, nunca los modelos.
+ * Laravel trae `cache.serializable_classes => false` por defecto (protege
+ * frente a cadenas de gadgets si se filtra la APP_KEY), de modo que cualquier
+ * driver que serialice —database, file, redis— devolvería un
+ * __PHP_Incomplete_Class si guardáramos objetos. Se rehidratan al leer.
  */
 final class PublicContent
 {
@@ -35,51 +43,49 @@ final class PublicContent
 
     public static function settings(): SiteSettings
     {
-        return Cache::rememberForever(self::KEY_SETTINGS, fn (): SiteSettings => SiteSettings::firstOrNew([]));
+        $attributes = Cache::rememberForever(
+            self::KEY_SETTINGS,
+            fn (): array => SiteSettings::query()->first()?->getAttributes() ?? []
+        );
+
+        return (new SiteSettings)->newFromBuilder($attributes);
     }
 
     /** @return Collection<int, Service> */
     public static function services(): Collection
     {
-        return Cache::rememberForever(
-            self::KEY_SERVICES,
-            fn (): Collection => Service::query()->published()->orderBy('id')->get()
-        );
+        return self::remember(self::KEY_SERVICES, Service::class, Service::query()->published()->orderBy('id'));
     }
 
     /** @return Collection<int, Service> */
     public static function featuredServices(): Collection
     {
-        return Cache::rememberForever(
+        return self::remember(
             self::KEY_SERVICES_FEATURED,
-            fn (): Collection => Service::query()->published()->featured()->orderBy('id')->limit(self::HOME_LIMIT)->get()
+            Service::class,
+            Service::query()->published()->featured()->orderBy('id')->limit(self::HOME_LIMIT)
         );
     }
 
     /** @return Collection<int, Product> */
     public static function products(): Collection
     {
-        return Cache::rememberForever(
-            self::KEY_PRODUCTS,
-            fn (): Collection => Product::query()->published()->orderBy('id')->get()
-        );
+        return self::remember(self::KEY_PRODUCTS, Product::class, Product::query()->published()->orderBy('id'));
     }
 
     /** @return Collection<int, Project> */
     public static function projects(): Collection
     {
-        return Cache::rememberForever(
-            self::KEY_PROJECTS,
-            fn (): Collection => Project::query()->published()->orderBy('id')->get()
-        );
+        return self::remember(self::KEY_PROJECTS, Project::class, Project::query()->published()->orderBy('id'));
     }
 
     /** @return Collection<int, Project> */
     public static function featuredProjects(): Collection
     {
-        return Cache::rememberForever(
+        return self::remember(
             self::KEY_PROJECTS_FEATURED,
-            fn (): Collection => Project::query()->published()->featured()->orderBy('id')->limit(self::HOME_LIMIT)->get()
+            Project::class,
+            Project::query()->published()->featured()->orderBy('id')->limit(self::HOME_LIMIT)
         );
     }
 
@@ -106,5 +112,22 @@ final class PublicContent
             self::KEY_PROJECTS,
             self::KEY_PROJECTS_FEATURED,
         ];
+    }
+
+    /**
+     * @template TModel of Model
+     *
+     * @param  class-string<TModel>  $model
+     * @param  Builder<TModel>  $query
+     * @return Collection<int, TModel>
+     */
+    private static function remember(string $key, string $model, $query): Collection
+    {
+        $rows = Cache::rememberForever(
+            $key,
+            fn (): array => $query->get()->map(fn (Model $record): array => $record->getAttributes())->all()
+        );
+
+        return $model::hydrate($rows);
     }
 }
