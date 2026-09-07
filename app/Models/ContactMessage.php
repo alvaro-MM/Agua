@@ -44,4 +44,49 @@ class ContactMessage extends Model
     {
         $query->where('status', ContactMessageStatus::Nuevo);
     }
+
+    /** @param  Builder<static>  $query */
+    public function scopePendientes(Builder $query): void
+    {
+        $query->whereIn('status', [ContactMessageStatus::Nuevo, ContactMessageStatus::Leido]);
+    }
+
+    /**
+     * Deja constancia de quién cerró el mensaje y cuándo. Va en un evento del
+     * modelo y no en el formulario para que también aplique a los cambios de
+     * estado hechos en lote desde el listado.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (self $message): void {
+            if (! $message->isDirty('status')) {
+                return;
+            }
+
+            if ($message->status->isPending()) {
+                $message->handled_by = null;
+                $message->handled_at = null;
+
+                return;
+            }
+
+            $message->handled_by ??= auth()->id();
+            $message->handled_at ??= now();
+        });
+    }
+
+    /** Enlace de WhatsApp al remitente, si dejó teléfono. */
+    public function whatsappUrl(): ?string
+    {
+        $digits = preg_replace('/\D/', '', (string) $this->phone);
+
+        if (blank($digits)) {
+            return null;
+        }
+
+        // Sin prefijo internacional se asume España.
+        $number = str_starts_with($digits, '34') ? $digits : '34'.ltrim($digits, '0');
+
+        return 'https://wa.me/'.$number;
+    }
 }
