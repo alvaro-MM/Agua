@@ -1,6 +1,4 @@
 @php
-    $company = config('site.company');
-    $contact = config('site.contact');
     $nav = [
         ['label' => 'Inicio', 'route' => 'home'],
         ['label' => 'Servicios', 'route' => 'services'],
@@ -18,7 +16,7 @@
                 <svg class="h-7 w-7 text-sky-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M12 2.5c3.5 4 6 7.4 6 10.5a6 6 0 1 1-12 0c0-3.1 2.5-6.5 6-10.5Z"/>
                 </svg>
-                <span>{{ $company['name'] }}</span>
+                <span>{{ $settings->company_name }}</span>
             </a>
 
             <nav class="hidden lg:flex items-center gap-1">
@@ -32,8 +30,8 @@
             </nav>
 
             <div class="hidden lg:flex items-center gap-3">
-                <a href="tel:{{ $contact['phone_link'] }}" class="text-sm font-semibold text-slate-700 hover:text-sky-700">
-                    {{ $contact['phone'] }}
+                <a href="tel:{{ $settings->phone_link }}" class="text-sm font-semibold text-slate-700 hover:text-sky-700">
+                    {{ $settings->phone }}
                 </a>
                 <a href="{{ route('contact') }}"
                    class="inline-flex items-center rounded-md bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700">

@@ -1,58 +1,89 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Electro Bombas MAPF
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Web corporativa y panel de gestión de **Electro Bombas MAPF**, empresa de instalación, reparación y mantenimiento de bombas de agua.
 
-## About Laravel
+- **Web pública** — inicio, servicios, catálogo, proyectos, sobre nosotros, contacto y páginas legales, con SEO y datos estructurados. Plan: [`plan-web-publica.md`](plan-web-publica.md).
+- **Panel de gestión** en `/admin` — bandeja de mensajes del formulario, contenido del sitio y ajustes de la empresa. Plan: [`plan-panel-privado.md`](plan-panel-privado.md).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Stack
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Laravel 13 · PHP 8.3+ · Blade · Tailwind CSS 4 · Vite · Filament 5 · spatie/laravel-permission
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Requisitos
 
-## Learning Laravel
+- PHP 8.3 o superior con la extensión **GD** (las imágenes del panel se convierten a WebP).
+- Composer y Node 20+.
+- MySQL o MariaDB en producción. En local basta con SQLite.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Puesta en marcha
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer setup            # instala dependencias, crea .env, genera la clave y migra
+php artisan storage:link  # publica las imágenes que se suben desde el panel
+php artisan db:seed       # roles, primer administrador y contenido inicial
+composer dev              # servidor + cola + logs + Vite
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+En local, deja `DB_CONNECTION=sqlite` en el `.env`; para MySQL, descomenta el resto del bloque de base de datos.
 
-## Contributing
+## El primer administrador
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Lo crea `AdminUserSeeder` a partir del `.env`:
 
-## Code of Conduct
+```dotenv
+ADMIN_NAME="Miguel"
+ADMIN_EMAIL=miguel@ejemplo.com
+ADMIN_PASSWORD=              # si lo dejas vacío, se genera una y se muestra al sembrar
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Después se entra en `/admin`. **No hay registro público**: los usuarios siguientes los da de alta un administrador desde el propio panel.
 
-## Security Vulnerabilities
+Para crear otro administrador desde consola:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan make:filament-user
+php artisan tinker --execute="App\Models\User::where('email','...')->first()->assignRole('admin');"
+```
 
-## License
+## Roles
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| | `admin` | `tecnico` |
+|---|---|---|
+| Bandeja de mensajes | ver, gestionar y eliminar | ver y gestionar |
+| Contenido del sitio | todo | solo consulta |
+| Usuarios y ajustes | sí | no |
+
+Los permisos se definen en `app/Support/Permissions.php` y los siembra `RolesAndPermissionsSeeder`. Tras añadir uno nuevo, relanza ese seeder: es idempotente.
+
+## Contenido del sitio
+
+Servicios, catálogo, proyectos y los datos de la empresa viven en la base de datos y se editan en `/admin`. `config/site.php` es solo la **semilla de arranque** y la copia de referencia del contenido original; las vistas ya no lo leen.
+
+`SiteContentSeeder` vuelca ese fichero a la base de datos y es idempotente: relanzarlo restaura los textos originales sin duplicar filas.
+
+Lo que se guarda en el panel se ve en la web al momento: `PublicContent` cachea las consultas y el trait `FlushesPublicCache` vacía esa caché al guardar.
+
+## Imágenes
+
+Las que se suben desde el panel se convierten a WebP, se limitan a 1600 px de ancho y generan una miniatura, en `storage/app/public/{catalogo,proyectos}`. Requiere `php artisan storage:link`.
+
+Las imágenes de ejemplo del seeder son URLs externas; `image_path` acepta tanto una ruta del disco público como una URL absoluta.
+
+## Tests y estilo
+
+```bash
+php artisan test      # SQLite en memoria
+vendor/bin/pint       # formato del código
+```
+
+## Despliegue
+
+```bash
+composer install --no-dev --optimize-autoloader
+npm ci && npm run build
+php artisan migrate --force
+php artisan storage:link
+php artisan optimize
+```
+
+`composer install` ejecuta `filament:upgrade`, que republica los assets del panel: por eso no están en el repositorio.

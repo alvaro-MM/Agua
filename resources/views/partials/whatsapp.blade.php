@@ -1,6 +1,5 @@
 @php
-    $contact = config('site.contact');
-    $waUrl = 'https://wa.me/' . $contact['whatsapp'] . '?text=' . rawurlencode($contact['whatsapp_message']);
+    $waUrl = 'https://wa.me/' . $settings->whatsapp . '?text=' . rawurlencode($settings->whatsapp_message);
 @endphp
 
 <a href="{{ $waUrl }}" target="_blank" rel="noopener noreferrer"

@@ -1,9 +1,4 @@
-@php
-    $company = config('site.company');
-    $contact = config('site.contact');
-@endphp
-
-<x-layouts.public title="Aviso legal" description="Aviso legal de {{ $company['name'] }}.">
+<x-layouts.public title="Aviso legal" description="Aviso legal de {{ $settings->company_name }}.">
     <section class="bg-slate-50 border-b border-slate-100">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-14">
             <h1 class="text-4xl font-bold tracking-tight text-slate-900">Aviso legal</h1>
@@ -24,11 +19,11 @@
                     Electrónico (LSSI-CE), se informa de los siguientes datos:
                 </p>
                 <ul class="mt-3 list-disc pl-6 space-y-1">
-                    <li>Titular: {{ $company['legal_name'] }}</li>
-                    <li>NIF/CIF: {{ $company['nif'] }}</li>
-                    <li>Domicilio: {{ $contact['address'] }}, {{ $contact['postal_code'] }} {{ $company['city'] }}</li>
-                    <li>Teléfono: {{ $contact['phone'] }}</li>
-                    <li>Email: {{ $contact['email'] }}</li>
+                    <li>Titular: {{ $settings->legal_name }}</li>
+                    <li>NIF/CIF: {{ $settings->nif }}</li>
+                    <li>Domicilio: {{ $settings->address }}, {{ $settings->postal_code }} {{ $settings->city }}</li>
+                    <li>Teléfono: {{ $settings->phone }}</li>
+                    <li>Email: {{ $settings->email }}</li>
                 </ul>
             </div>
 
@@ -36,7 +31,7 @@
                 <h2 class="text-xl font-semibold text-slate-900">2. Objeto</h2>
                 <p class="mt-2">
                     El presente sitio web tiene como finalidad ofrecer información sobre los servicios de instalación,
-                    reparación y mantenimiento de bombas de agua prestados por {{ $company['name'] }}.
+                    reparación y mantenimiento de bombas de agua prestados por {{ $settings->company_name }}.
                 </p>
             </div>
 
