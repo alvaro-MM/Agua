@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Permissions;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -24,7 +25,7 @@ class User extends Authenticatable implements FilamentUser
      *
      * @var list<string>
      */
-    public const PANEL_ROLES = ['admin', 'tecnico'];
+    public const PANEL_ROLES = [Permissions::ROLE_ADMIN, Permissions::ROLE_TECNICO];
 
     /**
      * Get the attributes that should be cast.
@@ -50,6 +51,16 @@ class User extends Authenticatable implements FilamentUser
 
     public function isAdmin(): bool
     {
-        return $this->hasRole('admin');
+        return $this->hasRole(Permissions::ROLE_ADMIN);
+    }
+
+    /**
+     * ¿Es el único administrador que queda? Se usa para impedir que el panel
+     * se quede sin nadie capaz de gestionarlo.
+     */
+    public function isLastAdmin(): bool
+    {
+        return $this->isAdmin()
+            && static::query()->role(Permissions::ROLE_ADMIN)->whereKeyNot($this->getKey())->doesntExist();
     }
 }

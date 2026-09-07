@@ -63,4 +63,14 @@ final class Permissions
     {
         return "{$action} {$resource}";
     }
+
+    /** Nombre del rol tal y como se le muestra a Miguel. */
+    public static function roleLabel(string $role): string
+    {
+        return match ($role) {
+            self::ROLE_ADMIN => 'Administrador',
+            self::ROLE_TECNICO => 'Técnico',
+            default => $role,
+        };
+    }
 }
